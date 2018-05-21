@@ -1,0 +1,137 @@
+---
+title: "NY_NY"
+output: html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Trabalho de conclusão do curso de Programação em R
+
+Autores: 
+Alexandre L Freitas
+Felipe R Silva
+Vinicius R Gomes
+
+Prof. Elthon Manhas de Freitas
+
+
+```{r}
+##########################################
+# Importação dos dataframes
+##########################################
+
+library(readr)
+setwd('C:/Users/frsil/Desktop/data')
+
+ny_test = read_csv('test.csv',locale=locale(encoding = "ISO-8859-1"))
+ny_train <- read_csv('train.csv',locale=locale(encoding = "ISO-8859-1"))
+
+spec(ny_train)
+head(ny_train)
+summary(ny_train)
+
+```
+
+```{r}
+
+library(dplyr)
+
+# Calculate distance in kilometers between two points - fonte: https://conservationecology.wordpress.com/2013/06/30/distance-between-two-points-in-r/ 
+earth.dist <- function (long1, lat1, long2, lat2)
+{
+rad <- pi/180
+a1 <- lat1 * rad
+a2 <- long1 * rad
+b1 <- lat2 * rad
+b2 <- long2 * rad
+dlon <- b2 - a2
+dlat <- b1 - a1
+
+a <- (sin(dlat/2))^2 + cos(a1) * cos(b1) * (sin(dlon/2))^2
+c <- 2 * atan2(sqrt(a), sqrt(1 - a))
+R <- 6378.145
+hipotenusa <- R * c
+
+return(hipotenusa)
+}
+
+ny_train2 = mutate(ny_train, DistanciaEuc = earth.dist(dropoff_longitude, dropoff_latitude, pickup_longitude, pickup_latitude)*1000)
+
+
+
+```
+
+
+```{r}
+library(Imap)
+library(dplyr)
+library(rgdal)
+library(leaflet)
+library(RColorBrewer)
+
+# cria campos com as distâncias Euclidiana e Manhattan
+ny_train2 = mutate(ny_train,  dist_euc = gdist(dropoff_longitude, dropoff_latitude, pickup_longitude, pickup_latitude, units = "m"),
+                              dist_man = gdist(dropoff_longitude, dropoff_latitude, pickup_longitude, dropoff_latitude, units = "m") + 
+                                         gdist(pickup_longitude, dropoff_latitude, pickup_longitude, pickup_latitude, units = "m"))
+
+
+# calcula o incremento que será utilizado em cada cluster da cidade de NY
+i = 40.00000
+j = -73.00000
+geo = 0
+while (geo < 1000) {
+  geo = gdist(40.00000, -73.00000, i, -73.00000, units = "m") * gdist(40.00000, -73.00000, 40.00000, j, units = "m")
+  i = i + 0.000001
+  j = j + 0.000001
+  incremento_lat = i - 40.000000
+  incremento_long = 73.000000 + j
+}
+
+# mapa NY 
+# https://dataficacao.wordpress.com/2017/02/21/criando-mapa-brasil-r/
+# https://data.cityofnewyork.us/Business/Zip-Code-Boundaries/i8iw-xf4u/data
+#
+
+shp <- readOGR("C:/Users/frsil/Desktop/data/NY_Maps", "ZIP_CODE_040114",  stringsAsFactors=FALSE, encoding="UTF-8")
+class(shp)
+View(shp)
+display.brewer.all()
+
+leaflet(data = shp)
+plot(shp)
+
+
+View(shp$COUNTY)
+
+boxplot(ny_train2$trip_duration, outline = F)
+boxplot(ny_train2$dist_euc, outline = F)
+boxplot(ny_train2$dist_man, outline = F)
+boxplot(ny_train2$pickup_longitude, outline = F)
+boxplot(ny_train2$dropoff_longitude, outline = F)
+boxplot(ny_train2$pickup_latitude, outline = F)
+boxplot(ny_train2$dropoff_latitude, outline = F)
+
+summary(ny_train2)
+
+
+
+```
+
+
+
+
+
+
+```{r}
+library(maps)
+library(mapdata)
+library(maptools)
+
+
+```
+
+
+
+
+
