@@ -1,12 +1,12 @@
 ---
-title: "NY_NY"
+title: "SP-SP"
 output: html_document
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Trabalho de conclus„o do curso de ProgramaÁ„o em R
+Trabalho de conclus√£o do curso de Programa√ß√£o em R
 
 Autores: 
 Alexandre L Freitas
@@ -18,7 +18,7 @@ Prof. Elthon Manhas de Freitas
 
 ```{r}
 ##########################################
-# ImportaÁ„o dos dataframes
+# Importa√ß√£o dos dataframes
 ##########################################
 
 library(readr)
@@ -70,13 +70,13 @@ library(rgdal)
 library(leaflet)
 library(RColorBrewer)
 
-# cria campos com as dist‚ncias Euclidiana e Manhattan
+# cria campos com as dist√¢ncias Euclidiana e Manhattan
 ny_train2 = mutate(ny_train,  dist_euc = gdist(dropoff_longitude, dropoff_latitude, pickup_longitude, pickup_latitude, units = "m"),
                               dist_man = gdist(dropoff_longitude, dropoff_latitude, pickup_longitude, dropoff_latitude, units = "m") + 
                                          gdist(pickup_longitude, dropoff_latitude, pickup_longitude, pickup_latitude, units = "m"))
 
 
-# calcula o incremento que ser· utilizado em cada cluster da cidade de NY
+# calcula o incremento que ser√° utilizado em cada cluster da cidade de NY
 i = 40.00000
 j = -73.00000
 geo = 0
